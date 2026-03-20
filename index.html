@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lookprajaotak</title>
+    <link rel="icon" href="logo.png" type="image/png">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Background Video -->
+    <video autoplay muted loop id="bgVideo" class="bg-video">
+        <!-- คุณสามารถนำไฟล์วิดีโอ .mp4 มาตั้งชื่อว่า bg.mp4 แล้ววางในโฟลเดอร์นี้ได้เลย -->
+        <source src="bg.mp4" type="video/mp4">
+    </video>
+    <div class="video-overlay"></div>
+
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="welcome-content">
+            <div class="welcome-icon">
+                <img src="logo.png" alt="Lookprajaotak Logo" class="welcome-logo-img">
+            </div>
+            <h1 class="welcome-title">Lookprajaotak</h1>
+            <p class="welcome-subtitle">Lookprajaotak By triplenine</p>
+            <button id="enterBtn" class="enter-btn">
+                <span>ดูรายชื่อ</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <!-- Background decorative elements -->
+        <div class="glow-orb glow-orb-1"></div>
+        <div class="glow-orb glow-orb-2"></div>
+    </div>
+
+    <div class="app-container" id="mainApp" style="display: none; opacity: 0; transition: opacity 0.8s ease;">
+        <header class="header">
+            <div class="header-content"
+                style="display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 1rem; width: 100%;">
+                <div>
+                    <h1><i class="fa-solid fa-users"></i> ระบบตรวจสอบรายชื่อLookprajaotak</h1>
+                    <p>รายชื่อปัจจุบัน นอกเหนือจากนี้ไม่มีส่วนเกี่ยวข้อง</p>
+                </div>
+                <button id="openAdminBtn" class="admin-btn">
+                    <i class="fa-solid fa-gear"></i> แอดมิน
+                </button>
+            </div>
+            <div class="search-container">
+                <i class="fa-solid fa-search search-icon"></i>
+                <input type="text" id="searchInput" placeholder="ค้นหารายชื่อ...">
+            </div>
+        </header>
+
+        <main class="main-content">
+            <div class="list-header">
+                <h2>รายชื่อทั้งหมด (<span id="totalCount">0</span>)</h2>
+                <div class="filter-group">
+                    <button class="filter-btn active" data-filter="all">ทั้งหมด</button>
+                    <button class="filter-btn" data-filter="Head">Head</button>
+                    <button class="filter-btn" data-filter="Member">Member</button>
+                </div>
+            </div>
+
+            <div id="userGrid" class="user-grid">
+                <!-- User cards will be injected here by JS -->
+            </div>
+        </main>
+    </div>
+
+    <!-- Admin Modal -->
+    <div id="adminModal" class="modal-overlay hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2><i class="fa-solid fa-user-shield"></i> จัดการรายชื่อโปรไฟล์</h2>
+                <button id="closeAdminBtn" class="close-btn"><i class="fa-solid fa-times"></i></button>
+            </div>
+
+            <form id="addMemberForm" class="admin-form">
+                <input type="hidden" id="editMemberId">
+                <div class="form-group">
+                    <label for="memberName">ชื่อบุคคล</label>
+                    <input type="text" id="memberName" required placeholder="ชื่อในแคลน">
+                </div>
+                <div class="form-group">
+                    <label for="memberGroup">ระดับชั้น (Head/Member)</label>
+                    <select id="memberGroup" required>
+                        <option value="Member">Member</option>
+                        <option value="Head">Head</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="memberAvatar">ลิงก์รูปโปรไฟล์ (URL)</label>
+                    <input type="url" id="memberAvatar" required placeholder="https://...">
+                </div>
+                <div class="form-group">
+                    <label for="memberFacebook">ลิงก์ Facebook (URL)</label>
+                    <input type="url" id="memberFacebook" placeholder="https://facebook.com/...">
+                </div>
+                <button type="submit" id="submitMemberBtn" class="submit-btn"><i class="fa-solid fa-plus"></i>
+                    เพิ่มรายชื่อ</button>
+                <button type="button" id="cancelEditBtn" class="close-btn hidden"
+                    style="margin-top: 10px; width: 100%; background: #555; border-radius: 8px; font-family: 'Prompt'; position: static;"><i
+                        class="fa-solid fa-times"></i> ยกเลิกการแก้ไข</button>
+            </form>
+
+            <hr class="modal-divider">
+
+            <div class="admin-list-container">
+                <h3 style="color: white; margin-bottom: 1rem; font-size: 1.1rem;">รายชื่อปัจจุบัน</h3>
+                <div id="adminUserList" class="admin-user-list">
+                    <!-- admin panel users listed here -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Spotify Widget -->
+    <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000; box-shadow: 0 8px 24px rgba(0,0,0,0.6); border-radius: 12px; overflow: hidden; transition: transform 0.3s ease;"
+        onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        <iframe style="border-radius:12px"
+            src="https://open.spotify.com/embed/track/0QLiLLeGGSlljWpa1aw8p1?utm_source=generator&theme=0" width="300"
+            height="80" frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
